@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小學數學－異分母的減法爬山挑戰</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Noto+Sans+HK:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:'Nunito','Noto Sans HK',sans-serif;background:#eff6ff;color:#1e293b;user-select:none}
+input{user-select:text}input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}input[type=number]{-moz-appearance:textfield}
+.cell{width:2.45rem;height:2.45rem;border:3px solid #6366f1;border-radius:.65rem;background:#fff;text-align:center;font-weight:900;font-size:1.25rem;color:#3730a3;outline:none;box-shadow:0 2px 4px #c7d2fe}.cell:focus{border-color:#10b981;box-shadow:0 0 0 4px #a7f3d0}.whole-cell{width:4.7rem;height:2.45rem;border:3px solid #6366f1;border-radius:.65rem;background:#fff;text-align:center;font-weight:900;font-size:1.25rem;color:#3730a3;outline:none;box-shadow:0 2px 4px #c7d2fe}.whole-cell:focus{border-color:#10b981;box-shadow:0 0 0 4px #a7f3d0}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1}.frac .bar{height:3px;width:2.6rem;background:#334155;margin:3px 0}.mixed{display:inline-flex;align-items:center;gap:.22rem}.term{display:inline-flex;align-items:center;gap:.25rem}.step-row{display:flex;align-items:center;justify-content:center;gap:.42rem;flex-wrap:wrap;margin:.42rem 0}.step-label{font-weight:900;color:#475569;font-size:.9rem}.step-line{height:2px;width:2.5rem;background:#94a3b8;margin:3px 0}.mountain{background:linear-gradient(#7dd3fc,#e0f2fe);position:relative;overflow:hidden}.mountain:after{content:'▲';position:absolute;bottom:5%;left:22%;font-size:18rem;line-height:.7;color:#34d399;text-shadow:2rem 1rem 0 #059669;opacity:.85}.cloud{position:absolute;font-size:2.5rem;opacity:.6;animation:drift 22s linear infinite}@keyframes drift{from{transform:translateX(-20vw)}to{transform:translateX(100vw)}}.climber{position:absolute;z-index:2;font-size:3rem;transition:all .6s ease;filter:drop-shadow(0 4px 3px #64748b);animation:bob 2s infinite}@keyframes bob{50%{transform:translateY(-8px)}}
+@media(max-width:640px){.cell{width:2.15rem;height:2.15rem}.whole-cell{width:4.1rem;height:2.15rem}.frac .bar{width:2.25rem}.step-label{font-size:.78rem}}
+</style>
+<style>.equation-row{display:flex;align-items:center;justify-content:center;gap:.55rem;flex-wrap:wrap;min-width:max-content;margin:1.25rem 0;font-size:2rem;font-weight:900}.equation-row .step-line{height:3px;width:2.6rem;background:#334155;margin:3px 0}.input-correct{border-color:#16a34a!important;background:#f0fdf4!important;box-shadow:0 0 0 3px #bbf7d0!important}.input-wrong{border-color:#dc2626!important;background:#fef2f2!important;box-shadow:0 0 0 3px #fecaca!important}.trail{position:absolute;z-index:1;inset:5% 8% 3% 8%;width:84%;height:92%}.climber{position:absolute;z-index:3;width:4.5rem;height:6rem;transition:left .7s ease,top .7s ease;filter:drop-shadow(0 4px 3px #475569);animation:bob 2s infinite}.mountain:before{content:'';position:absolute;z-index:0;bottom:0;left:5%;width:90%;height:100%;background:linear-gradient(135deg,#34d399,#047857);clip-path:polygon(55% 0,100% 100%,0 100%);opacity:.9}.mountain:after{content:'❄';position:absolute;z-index:1;top:3%;left:51%;font-size:3rem;line-height:1;color:#fff;opacity:.95}@keyframes bob{50%{transform:translateY(-8px)}}@media(max-width:767px){.mountain{min-height:22rem}}
+<style>#setup{display:flex;position:fixed;inset:0;z-index:50;align-items:center;justify-content:center;padding:1rem;background:#e0f2fe}#setup>div{display:block;width:100%;max-width:42rem;padding:1.5rem;background:#fff;border:4px solid #c7d2fe;border-radius:2rem;box-shadow:0 20px 40px #94a3b8}header{display:block;background:#fff;padding:.75rem;border-bottom:2px solid #e0e7ff}main{display:flex;min-height:calc(100vh - 74px)}section{display:block}.mountain{position:relative;flex:0 0 33.333%;min-height:calc(100vh - 74px)}#setup-preview{display:block;min-height:7rem}.hidden{display:none!important}</style>
+</head>
+<body class="min-h-screen">
+<div id="setup" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-sky-100">
+  <div class="bg-white rounded-[2rem] shadow-2xl p-6 max-w-2xl w-full border-4 border-indigo-200">
+    <div class="grid md:grid-cols-2 gap-5 items-center"><div class="text-center"><div id="setup-preview" class="text-8xl mb-3">🧗</div><h1 class="text-3xl font-black text-indigo-700">異分母的減法</h1><p class="text-slate-600 font-bold mt-2">每題都要完成通分母步驟，答案要約至最簡，不能用假分數！</p></div>
+    <div class="text-left space-y-3"><div><label class="font-black text-indigo-900">角色性別</label><div class="grid grid-cols-2 gap-2 mt-1"><button onclick="setRole('gender','boy')" id="role-boy" class="role-btn rounded-xl border-2 border-indigo-400 bg-indigo-100 p-2 font-black">男仔 👦</button><button onclick="setRole('gender','girl')" id="role-girl" class="role-btn rounded-xl border-2 border-slate-200 p-2 font-black">女仔 👧</button></div></div><div><label class="font-black text-indigo-900">髮型</label><div class="grid grid-cols-2 gap-2 mt-1"><button onclick="setRole('hair',1)" id="hair-1" class="role-btn rounded-xl border-2 border-indigo-400 bg-indigo-100 p-2 font-black">短髮</button><button onclick="setRole('hair',2)" id="hair-2" class="role-btn rounded-xl border-2 border-slate-200 p-2 font-black">長髮</button></div></div><div><label class="font-black text-indigo-900">衣服顏色</label><div class="flex gap-2 mt-1"><button onclick="setRole('color','🔴')" class="rounded-full bg-red-400 w-9 h-9"> </button><button onclick="setRole('color','🔵')" class="rounded-full bg-blue-400 w-9 h-9"> </button><button onclick="setRole('color','🟢')" class="rounded-full bg-green-400 w-9 h-9"> </button><button onclick="setRole('color','🟣')" class="rounded-full bg-purple-400 w-9 h-9"> </button></div></div><label class="font-black text-indigo-900">選擇挑戰關卡</label><select id="start-level" class="w-full rounded-xl border-2 border-indigo-300 p-3 font-black bg-indigo-50"><option value="1">第一關：1 － 真分數</option><option value="2">第二關：整數 － 真分數</option><option value="3">第三關：整數 － 帶分數</option><option value="4">第四關：真分數 － 真分數</option><option value="5">第五關：帶分數 － 真分數</option><option value="6">第六關：帶分數 － 帶分數</option><option value="7">第七關：整數 － 真分數 － 真分數</option><option value="8">第八關：真分數 － 真分數 － 真分數</option><option value="9">第九關：帶分數 減 兩個分數</option><option value="10">第十關：帶分數 － 帶分數 － 帶分數</option></select><button onclick="startLevel(+document.getElementById('start-level').value)" class="w-full py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white text-xl font-black shadow-lg">開始爬山！ 🚀</button></div></div>
+  </div>
+</div>
+<header class="bg-white/95 border-b-2 border-indigo-100 p-3 shadow-sm"><div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2"><h1 class="text-xl md:text-2xl font-black text-indigo-700">✏️ 異分母的減法爬山挑戰</h1><div class="flex items-center gap-2"><select id="level-select" onchange="startLevel(+this.value)" class="rounded-xl border-2 border-indigo-300 bg-indigo-50 p-2 text-sm font-black"><option value="1">第一關</option><option value="2">第二關</option><option value="3">第三關</option><option value="4">第四關</option><option value="5">第五關</option><option value="6">第六關</option><option value="7">第七關</option><option value="8">第八關</option><option value="9">第九關</option><option value="10">第十關</option></select><button onclick="startAll()" class="rounded-xl bg-amber-400 px-3 py-2 font-black text-amber-950">🏆 全部十關</button></div></div></header>
+<main class="min-h-[calc(100vh-74px)] flex flex-col md:flex-row">
+<section class="mountain h-80 md:h-auto md:min-h-[calc(100vh-74px)] md:w-1/3 shrink-0 border-b-4 md:border-b-0 md:border-r-4 border-slate-300"><span class="cloud" style="top:15%;left:5%">☁️</span><span class="cloud" style="top:45%;left:50%;animation-delay:-9s">☁️</span><svg class="trail" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M8 94 C35 82, 10 72, 42 62 S78 43, 54 32 S65 15, 88 5" fill="none" stroke="#f8fafc" stroke-width="8" opacity=".9"/><path d="M8 94 C35 82, 10 72, 42 62 S78 43, 54 32 S65 15, 88 5" fill="none" stroke="#b45309" stroke-width="2" stroke-dasharray="3 2"/><text x="87" y="8" font-size="7">🚩</text></svg><div id="climber" class="climber" style="left:8%;top:76%"></div><div class="absolute z-10 top-3 left-3 rounded-2xl bg-white/90 p-3 font-black shadow"><div id="mode-label" class="text-indigo-700">單關練習</div><div>🌟 首對：<span id="first-count">0</span>/<span id="target-count">10</span></div><div>⚠️ 再試：<span id="retry-count">0</span></div></div><div class="absolute bottom-0 left-0 right-0 h-3 bg-slate-200"><div id="progress" class="h-full bg-emerald-500 transition-all" style="width:0%"></div></div></section>
+<section class="flex-1 overflow-y-auto p-3 md:p-6"><div class="max-w-3xl mx-auto"><div class="flex justify-between items-center mb-3"><div><p id="level-title" class="text-lg font-black text-indigo-700"></p><p id="question-number" class="text-sm font-bold text-slate-500"></p></div><button onclick="showHelp()" class="rounded-xl bg-sky-100 px-3 py-2 font-black text-sky-800">？怎樣作答</button></div>
+<div class="rounded-3xl border-4 border-indigo-200 bg-indigo-50 p-4 md:p-6 shadow-inner"><div id="work-area" class="rounded-2xl bg-white p-4 md:p-7 border-2 border-indigo-100 overflow-x-auto"></div><p id="feedback" class="min-h-7 text-center font-black mt-3"></p></div>
+<div class="flex gap-3 mt-4"><button onclick="clearAll()" class="w-1/3 rounded-2xl bg-slate-200 py-3 font-black text-slate-700">重設</button><button onclick="checkAnswer()" class="w-2/3 rounded-2xl bg-emerald-500 py-3 text-xl font-black text-white shadow-md">確定！ (Enter)</button></div></div></section></main>
+<div id="modal" class="fixed inset-0 z-40 hidden items-center justify-center bg-slate-900/60 p-4"><div class="max-w-md w-full rounded-3xl bg-white p-7 text-center shadow-2xl"><div id="modal-icon" class="text-6xl">🏆</div><h2 id="modal-title" class="mt-2 text-2xl font-black"></h2><p id="modal-text" class="mt-2 font-bold text-slate-600"></p><button onclick="nextAction()" class="mt-5 w-full rounded-2xl bg-amber-400 py-3 text-lg font-black">繼續挑戰 ➜</button></div></div>
+<script>
+const LEVELS={
+  1:{title:'第一關：1 － 真分數'},
+  2:{title:'第二關：整數 － 真分數'},
+  3:{title:'第三關：整數 － 帶分數'},
+  4:{title:'第四關：真分數 － 真分數'},
+  5:{title:'第五關：帶分數 － 真分數'},
+  6:{title:'第六關：帶分數 － 帶分數'},
+  7:{title:'第七關：整數 － 真分數 － 真分數'},
+  8:{title:'第八關：真分數 － 真分數 － 真分數'},
+  9:{title:'第九關：帶分數 減 兩個分數'},
+  10:{title:'第十關：帶分數 － 帶分數 － 帶分數'}
+};
+let level=1,question=null,first=0,retry=0,totalAttempts=0,targetGoal=10,attempt=true,allMode=false,completedThis=0;let usedDenominatorSets=new Set();let role={gender:'boy',hair:1,color:'#3b82f6'};const $=id=>document.getElementById(id);
+const gcd=(a,b)=>b?gcd(b,a%b):Math.abs(a);const lcm=(a,b)=>a/gcd(a,b)*b;const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+
+function formatTerm(t){
+  if(t.type==='one') return '<span>1</span>';
+  if(t.type==='int') return `<span>${t.whole}</span>`;
+  if(t.type==='proper') return `<span class="frac"><span>${t.n}</span><span class="bar"></span><span>${t.d}</span></span>`;
+  if(t.type==='mixed') return `<span class="mixed"><span>${t.whole}</span><span class="frac"><span>${t.n}</span><span class="bar"></span><span>${t.d}</span></span></span>`;
+}
+
+function denominatorCandidates(count,kind){
+  let out=[];
+  for(let a=2;a<=15;a++)for(let b=a+1;b<=15;b++){
+    if(count===2){
+      let ds=[a,b],divides=(b%a===0),coprime=(gcd(a,b)===1);
+      if((kind==='multiple'&&divides)||(kind==='coprime'&&coprime)||(kind==='lcm'&&!divides&&!coprime))out.push(ds);
+    }else{
+      for(let c=b+1;c<=15;c++){
+        let ds=[a,b,c],divides=ds.some((x,i)=>ds.some((y,j)=>i!==j&&y%x===0)),coprime=ds.every((x,i)=>ds.every((y,j)=>i===j||gcd(x,y)===1));
+        if((kind==='multiple'&&divides)||(kind==='coprime'&&coprime)||(kind==='lcm'&&!divides&&!coprime))out.push(ds);
+      }
+    }
+  }
+  return out;
+}
+
+function makeQuestion(){
+  let kinds=['multiple','coprime','lcm','lcm','lcm'],kind=kinds[completedThis%5],terms=[],L=1;
+  if(level===1){
+    let d=rand(3,12),n=rand(1,d-1); L=d;
+    terms=[{type:'one',whole:1,n:0,d:1,expW:0,expN:d,expD:d},{type:'proper',whole:0,n:n,d:d,expW:0,expN:n,expD:d}];
+  }else if(level===2){
+    let W=rand(2,6),d=rand(3,12),n=rand(1,d-1); L=d;
+    terms=[{type:'int',whole:W,n:0,d:1,expW:W-1,expN:d,expD:d},{type:'proper',whole:0,n:n,d:d,expW:0,expN:n,expD:d}];
+  }else if(level===3){
+    let W1=rand(3,6),W2=rand(1,W1-1),d=rand(3,12),n=rand(1,d-1); L=d;
+    terms=[{type:'int',whole:W1,n:0,d:1,expW:W1-1,expN:d,expD:d},{type:'mixed',whole:W2,n:n,d:d,expW:W2,expN:n,expD:d}];
+  }else if(level===4){
+    let candidates=denominatorCandidates(2,kind); if(!candidates.length) candidates=denominatorCandidates(2,'lcm');
+    let ds=candidates[rand(0,candidates.length-1)]; usedDenominatorSets.add(ds.join('-'));
+    let d1=ds[0],d2=ds[1]; L=lcm(d1,d2);
+    let n1=rand(1,d1-1),n2=rand(1,d2-1),N1=n1*(L/d1),N2=n2*(L/d2);
+    if(N1<=N2){ n1=Math.min(d1-1,Math.floor(N2*d1/L)+1); N1=n1*(L/d1); if(N1<=N2){ n2=Math.max(1,Math.floor(N1*d2/L)-1); N2=n2*(L/d2); if(N1<=N2){n1=d1-1;N1=n1*(L/d1);n2=1;N2=n2*(L/d2);}} }
+    terms=[{type:'proper',whole:0,n:n1,d:d1,expW:0,expN:N1,expD:L},{type:'proper',whole:0,n:n2,d:d2,expW:0,expN:N2,expD:L}];
+  }else if(level===5){
+    let candidates=denominatorCandidates(2,kind); if(!candidates.length) candidates=denominatorCandidates(2,'lcm');
+    let ds=candidates[rand(0,candidates.length-1)]; usedDenominatorSets.add(ds.join('-'));
+    let d1=ds[0],d2=ds[1]; L=lcm(d1,d2);
+    let needBorrow = Math.random() < 0.5;
+    let n1, n2, N1, N2, attempts = 0;
+    do {
+      n1 = rand(1, d1-1); n2 = rand(1, d2-1);
+      N1 = n1 * (L/d1); N2 = n2 * (L/d2);
+      attempts++;
+    } while (((needBorrow && N1 >= N2) || (!needBorrow && N1 < N2)) && attempts < 100);
+
+    if(needBorrow && N1 >= N2){ n1 = 1; N1 = L/d1; n2 = d2 - 1; N2 = n2 * (L/d2); }
+    else if(!needBorrow && N1 < N2){ n1 = d1 - 1; N1 = n1 * (L/d1); n2 = 1; N2 = L/d2; }
+
+    let W1 = rand(1, 4);
+    if(W1 * L + N1 <= N2){ W1 = Math.ceil((N2 - N1 + 1) / L); }
+    terms=[{type:'mixed',whole:W1,n:n1,d:d1,expW:W1,expN:N1,expD:L},{type:'proper',whole:0,n:n2,d:d2,expW:0,expN:N2,expD:L}];
+  }else if(level===6){
+    let candidates=denominatorCandidates(2,kind); if(!candidates.length) candidates=denominatorCandidates(2,'lcm');
+    let ds=candidates[rand(0,candidates.length-1)]; usedDenominatorSets.add(ds.join('-'));
+    let d1=ds[0],d2=ds[1]; L=lcm(d1,d2);
+    let needBorrow = Math.random() < 0.5;
+    let n1, n2, N1, N2, attempts = 0;
+    do {
+      n1 = rand(1, d1-1); n2 = rand(1, d2-1);
+      N1 = n1 * (L/d1); N2 = n2 * (L/d2);
+      attempts++;
+    } while (((needBorrow && N1 >= N2) || (!needBorrow && N1 < N2)) && attempts < 100);
+
+    if(needBorrow && N1 >= N2){ n1 = 1; N1 = L/d1; n2 = d2 - 1; N2 = n2 * (L/d2); }
+    else if(!needBorrow && N1 < N2){ n1 = d1 - 1; N1 = n1 * (L/d1); n2 = 1; N2 = L/d2; }
+
+    let W2 = rand(1, 4);
+    let W1 = needBorrow ? (W2 + rand(1, 3)) : (N1 > N2 ? W2 + rand(0, 3) : W2 + rand(1, 3));
+    terms=[{type:'mixed',whole:W1,n:n1,d:d1,expW:W1,expN:N1,expD:L},{type:'mixed',whole:W2,n:n2,d:d2,expW:W2,expN:N2,expD:L}];
+  }else if(level===7){
+    let candidates=denominatorCandidates(2,kind); if(!candidates.length) candidates=denominatorCandidates(2,'lcm');
+    let ds=candidates[rand(0,candidates.length-1)]; usedDenominatorSets.add(ds.join('-'));
+    let d1=ds[0],d2=ds[1]; L=lcm(d1,d2);
+    let W=rand(2,5),n1=rand(1,Math.max(1,Math.floor(d1/3))),n2=rand(1,Math.max(1,Math.floor(d2/3))),N1=n1*(L/d1),N2=n2*(L/d2);
+    if(N1+N2>=L){ n1=1;N1=L/d1; n2=1;N2=L/d2; }
+    terms=[{type:'int',whole:W,n:0,d:1,expW:W-1,expN:L,expD:L},{type:'proper',whole:0,n:n1,d:d1,expW:0,expN:N1,expD:L},{type:'proper',whole:0,n:n2,d:d2,expW:0,expN:N2,expD:L}];
+  }else if(level===8){
+    let candidates=denominatorCandidates(3,kind); if(!candidates.length) candidates=denominatorCandidates(3,'lcm');
+    let ds=candidates[rand(0,candidates.length-1)]; usedDenominatorSets.add(ds.join('-'));
+    let d1=ds[0],d2=ds[1],d3=ds[2]; L=lcm(d1,lcm(d2,d3));
+    let n2=rand(1,Math.max(1,Math.floor(d2/3))),n3=rand(1,Math.max(1,Math.floor(d3/3))),N2=n2*(L/d2),N3=n3*(L/d3);
+    let minN1=N2+N3+1,n1=Math.min(d1-1,Math.ceil(minN1*d1/L)),N1=n1*(L/d1);
+    if(N1<=N2+N3){ n2=1;N2=L/d2; n3=1;N3=L/d3; n1=d1-1;N1=n1*(L/d1); }
+    terms=[{type:'proper',whole:0,n:n1,d:d1,expW:0,expN:N1,expD:L},{type:'proper',whole:0,n:n2,d:d2,expW:0,expN:N2,expD:L},{type:'proper',whole:0,n:n3,d:d3,expW:0,expN:N3,expD:L}];
+  }else if(level===9){
+    let subType=Math.random()<0.5?'mixed_prop_prop':'mixed_mixed_prop';
+    let candidates=denominatorCandidates(3,kind); if(!candidates.length) candidates=denominatorCandidates(3,'lcm');
+    let ds=candidates[rand(0,candidates.length-1)]; usedDenominatorSets.add(ds.join('-'));
+    let d1=ds[0],d2=ds[1],d3=ds[2]; L=lcm(d1,lcm(d2,d3));
+    let needBorrow = Math.random() < 0.5;
+    let n1, n2, n3, N1, N2, N3, attempts = 0;
+    do {
+      n1 = rand(1, d1-1); n2 = rand(1, d2-1); n3 = rand(1, d3-1);
+      N1 = n1 * (L/d1); N2 = n2 * (L/d2); N3 = n3 * (L/d3);
+      attempts++;
+    } while (((needBorrow && N1 >= N2 + N3) || (!needBorrow && N1 < N2 + N3)) && attempts < 100);
+
+    if(needBorrow && N1 >= N2 + N3){ n1 = 1; N1 = L/d1; n2 = Math.max(1, Math.floor(d2/2)); N2 = n2 * (L/d2); n3 = Math.max(1, Math.floor(d3/2)); N3 = n3 * (L/d3); }
+    else if(!needBorrow && N1 < N2 + N3){ n1 = d1 - 1; N1 = n1 * (L/d1); n2 = 1; N2 = L/d2; n3 = 1; N3 = L/d3; }
+
+    let W2 = subType==='mixed_mixed_prop' ? rand(1, 3) : 0;
+    let minW1 = W2 + Math.ceil((N2 + N3 - N1 + 1) / L);
+    if(minW1 < 1) minW1 = 1;
+    let W1 = minW1 + rand(0, 2);
+
+    terms=[{type:'mixed',whole:W1,n:n1,d:d1,expW:W1,expN:N1,expD:L},
+           subType==='mixed_mixed_prop'?{type:'mixed',whole:W2,n:n2,d:d2,expW:W2,expN:N2,expD:L}:{type:'proper',whole:0,n:n2,d:d2,expW:0,expN:N2,expD:L},
+           {type:'proper',whole:0,n:n3,d:d3,expW:0,expN:N3,expD:L}];
+  }else if(level===10){
+    let candidates=denominatorCandidates(3,kind); if(!candidates.length) candidates=denominatorCandidates(3,'lcm');
+    let ds=candidates[rand(0,candidates.length-1)]; usedDenominatorSets.add(ds.join('-'));
+    let d1=ds[0],d2=ds[1],d3=ds[2]; L=lcm(d1,lcm(d2,d3));
+    let needBorrow = Math.random() < 0.5;
+    let n1, n2, n3, N1, N2, N3, attempts = 0;
+    do {
+      n1 = rand(1, d1-1); n2 = rand(1, d2-1); n3 = rand(1, d3-1);
+      N1 = n1 * (L/d1); N2 = n2 * (L/d2); N3 = n3 * (L/d3);
+      attempts++;
+    } while (((needBorrow && N1 >= N2 + N3) || (!needBorrow && N1 < N2 + N3)) && attempts < 100);
+
+    if(needBorrow && N1 >= N2 + N3){ n1 = 1; N1 = L/d1; n2 = Math.max(1, Math.floor(d2/2)); N2 = n2 * (L/d2); n3 = Math.max(1, Math.floor(d3/2)); N3 = n3 * (L/d3); }
+    else if(!needBorrow && N1 < N2 + N3){ n1 = d1 - 1; N1 = n1 * (L/d1); n2 = 1; N2 = L/d2; n3 = 1; N3 = L/d3; }
+
+    let W2 = rand(1, 2);
+    let W3 = rand(1, 2);
+    let minW1 = W2 + W3 + Math.ceil((N2 + N3 - N1 + 1) / L);
+    let W1 = minW1 + rand(0, 2);
+
+    terms=[{type:'mixed',whole:W1,n:n1,d:d1,expW:W1,expN:N1,expD:L},{type:'mixed',whole:W2,n:n2,d:d2,expW:W2,expN:N2,expD:L},{type:'mixed',whole:W3,n:n3,d:d3,expW:W3,expN:N3,expD:L}];
+  }
+
+  // 精確計算最終答案（處理借位與假分數通分）
+  let totalN = terms[0].expW * L + terms[0].expN;
+  for(let i=1;i<terms.length;i++){
+    totalN -= (terms[i].expW * L + terms[i].expN);
+  }
+
+  let ansW = 0, ansN = 0, ansD = 1;
+  if(totalN > 0){
+    let g = gcd(totalN, L);
+    let reducedN = totalN / g;
+    let reducedD = L / g;
+    ansW = Math.floor(reducedN / reducedD);
+    ansN = reducedN % reducedD;
+    ansD = ansN === 0 ? 1 : reducedD;
+  }
+  return { terms, L, kind, answer:{ whole: ansW, n: ansN, d: ansD } };
+}
+
+function input(cls,id,max=2){return `<input id="${id}" class="${cls}" type="number" min="0" max="${max}" inputmode="numeric" aria-label="數字輸入">`}
+
+function render(){
+  question=makeQuestion();attempt=true;
+  $('level-title').textContent=LEVELS[level].title;
+  $('question-number').textContent=`第 ${completedThis+1} 題（首對 ${first}/${targetGoal}） · 分母類型：${question.kind==='multiple'?'倍數':question.kind==='coprime'?'互質':'需找最少公倍數'}`;
+  
+  let original=question.terms.map((t,i)=>`${i?' <span class="text-indigo-500">－</span> ':''}${formatTerm(t)}`).join('');
+  let converted=question.terms.map((t,i)=>{
+    let op=i?' <span class="text-indigo-500">－</span> ':'';
+    if(t.expW>0) return `${op}<span class="mixed">${input('whole-cell',`step-w-${i}`,9)}<span class="frac"><span>${input('cell',`step-n-${i}`)}</span><span class="step-line"></span><span>${input('whole-cell',`step-d-${i}`,99)}</span></span></span>`;
+    return `${op}<span class="frac"><span>${input('cell',`step-n-${i}`)}</span><span class="step-line"></span><span>${input('whole-cell',`step-d-${i}`,99)}</span></span>`;
+  }).join('');
+  
+  let answer = question.answer.n === 0
+    ? input('whole-cell','ans-w',99)
+    : question.answer.whole > 0
+      ? `<span class="mixed">${input('whole-cell','ans-w',9)}<span class="frac"><span>${input('cell','ans-n')}</span><span class="step-line"></span><span>${input('cell','ans-d',99)}</span></span></span>`
+      : `<span class="frac"><span>${input('cell','ans-n')}</span><span class="step-line"></span><span>${input('cell','ans-d',99)}</span></span>`;
+  
+  $('work-area').innerHTML=`<div class="equation-row">${original}</div><div class="equation-row"><span class="text-slate-500">＝</span>${converted}</div><div class="equation-row"><span class="text-slate-500">＝</span>${answer}</div>`;
+  document.querySelectorAll('input').forEach(x=>{x.addEventListener('input',()=>x.value=x.value.replace(/[^0-9]/g,''));x.addEventListener('keydown',e=>{if(e.key==='Enter')checkAnswer()})});
+  setTimeout(()=>document.querySelector('input')?.focus(),30);
+  updateUI();
+}
+
+function read(id){
+  let el=$(id);
+  if(!el) return NaN;
+  let v=el.value.trim();
+  return v===''?NaN:parseInt(v,10);
+}
+function mark(id,ok){let el=$(id);if(el)el.classList.remove('input-correct','input-wrong'),el.classList.add(ok?'input-correct':'input-wrong')}
+
+function checkAnswer(){
+  if(!question)return;totalAttempts++;let valid=true;
+  question.terms.forEach((t,i)=>{
+    if(t.expW>0){ let ok=read(`step-w-${i}`)===t.expW; mark(`step-w-${i}`,ok); valid=valid&&ok; }
+    let enteredN=read(`step-n-${i}`),enteredD=read(`step-d-${i}`),okN=enteredN===t.expN,okD=enteredD===t.expD;
+    mark(`step-n-${i}`,okN); mark(`step-d-${i}`,okD); valid=valid&&okN&&okD;
+  });
+  let okW=true, okN=true, okD=true;
+  if(question.answer.n===0){
+    let aw=read('ans-w'); okW=aw===question.answer.whole; mark('ans-w',okW); valid=valid&&okW;
+  }else if(question.answer.whole===0){
+    let an=read('ans-n'), ad=read('ans-d');
+    okN=an===question.answer.n; okD=ad===question.answer.d;
+    mark('ans-n',okN); mark('ans-d',okD);
+    valid=valid&&okN&&okD&&(!isNaN(ad)&&!isNaN(an)&&an<ad);
+  }else{
+    let aw=read('ans-w'), an=read('ans-n'), ad=read('ans-d');
+    okW=aw===question.answer.whole; okN=an===question.answer.n; okD=ad===question.answer.d;
+    mark('ans-w',okW); mark('ans-n',okN); mark('ans-d',okD);
+    valid=valid&&okW&&okN&&okD&&(!isNaN(ad)&&!isNaN(an)&&an<ad);
+  }
+
+  if(valid){
+    if(attempt)first++;completedThis++;
+    $('feedback').textContent='🎉 全部正確！綠框表示正確，進入下一題。';
+    $('feedback').className='min-h-7 text-center font-black mt-3 text-emerald-600';
+    updateUI();
+    if(first>=targetGoal){setTimeout(levelComplete,500)}else setTimeout(render,650);
+  }else{
+    if(attempt){retry++;targetGoal++;attempt=false}
+    $('feedback').innerHTML='❌ 答案未完全正確，請自行檢查及改正。必須全部正確才可進入下一題，本關首對目標增加 1 題。';
+    $('feedback').className='min-h-7 text-center font-black mt-3 text-rose-600';
+    updateUI();
+  }
+}
+
+function clearAll(){document.querySelectorAll('input').forEach(x=>x.value='');document.querySelector('input')?.focus();}
+function updateUI(){
+  let pct=Math.min(100,Math.round(first/targetGoal*100));
+  $('first-count').textContent=first;$('retry-count').textContent=retry;$('target-count').textContent=targetGoal;
+  $('progress').style.width=`${pct}%`;
+  let x=8+80*(pct/100),y=76-71*(pct/100);
+  $('climber').style.left=`${x}%`;$('climber').style.top=`${y}%`;
+}
+
+function startLevel(n,all=false){
+  level=n;allMode=all;first=0;retry=0;totalAttempts=0;targetGoal=10;completedThis=0;usedDenominatorSets=new Set();
+  $('level-select').value=n;
+  $('mode-label').textContent=all?`🏆 全部十關（第 ${n}/10 關）`:'🎯 單關練習';
+  $('setup').classList.add('hidden');$('modal').classList.add('hidden');$('modal').classList.remove('flex');
+  render();
+}
+
+function startAll(){startLevel(1,true)}
+
+function levelComplete(){
+  $('modal-icon').textContent=allMode&&level===10?'👑':'🏆';
+  $('modal-title').textContent=allMode?`第 ${level} 關完成！`:`${LEVELS[level].title}完成！`;
+  $('modal-text').innerHTML=`<b>成績單</b><br>總作答題目：${totalAttempts} 題<br>真正答對題目：${first} 題<br>重試／錯誤次數：${retry} 次<br><span class="text-emerald-600">每題只在首次答對時計入成績</span>`;
+  $('modal').classList.remove('hidden');$('modal').classList.add('flex');
+}
+
+function nextAction(){if(allMode&&level<10)startLevel(level+1,true);else if(allMode)startAll();else startLevel(level<10?level+1:1)}
+
+function characterSVG(){
+  let girl=role.gender==='girl',hair=girl?'#24120a':'#3b2414',colors={'🔴':'#ef4444','🔵':'#3b82f6','🟢':'#22c55e','🟣':'#a855f7'},shirt=colors[role.color]||role.color;
+  return `<svg viewBox="0 0 80 110" class="w-full h-full"><circle cx="40" cy="18" r="14" fill="#ffd7b5"/><path d="M26 17 Q28 2 40 3 Q53 2 55 17 ${girl?'Q59 7 62 19 L57 31 Q54 11 26 17':'L54 28 Q51 9 28 16Z'}" fill="${hair}"/><circle cx="35" cy="18" r="2"/><circle cx="46" cy="18" r="2"/><path d="M36 25 Q40 28 44 25" fill="none" stroke="#7c2d12" stroke-width="1.5"/><path d="M25 35 Q40 29 55 35 L59 67 Q40 76 21 67Z" fill="${shirt}" stroke="#1e3a8a" stroke-width="2"/><path d="M27 39 L12 57 M53 39 L68 57" stroke="#ffd7b5" stroke-width="7" stroke-linecap="round"/><path d="M29 68 L27 98 M51 68 L54 98" stroke="#1e293b" stroke-width="9" stroke-linecap="round"/><path d="M21 99 L33 99 M48 99 L61 99" stroke="#7c2d12" stroke-width="5" stroke-linecap="round"/><path d="M18 61 Q40 70 62 61" fill="none" stroke="#fbbf24" stroke-width="3"/></svg>`;
+}
+
+function setRole(key,value){role[key]=value;updateRoleUI()}
+function updateRoleUI(){
+  $('setup-preview').innerHTML=characterSVG();$('climber').innerHTML=characterSVG();
+  ['boy','girl'].forEach(x=>$(`role-${x}`)?.classList.toggle('border-indigo-400',role.gender===(x==='boy'?'boy':'girl')));
+  ['1','2'].forEach(x=>$(`hair-${x}`)?.classList.toggle('border-indigo-400',role.hair===+x));
+}
+
+function showHelp(){alert('請依照手寫格式完成：第一行是原題；第二行把每一項改寫成相同分母；第三行把答案約成最簡帶分數或整數。答錯時會保留同一題並增加作答次數，必須全題答對才進入下一題。')}
+window.onload=()=>{document.querySelector('#start-level').value=1;updateRoleUI();updateUI()};
+</script></body></html>
